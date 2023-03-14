@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  dummy_rest_db:
+    image: 'mysql:8.0'
+    ports:
+      - 33062:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d
+    networks:
+      - dummy_rest
+
+  dummy_rest_php:
+    build:
+      context: ./docker/php
+    depends_on:
+      - dummy_rest_db
+    volumes:
+      - .:/www
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+    environment:
+      XDEBUG_CONFIG: "start_with_request=yes idekey=\"PHPSTORM\" client_host=host.docker.internal"
+      XDEBUG_MODE: "debug"
+    networks:
+      - dummy_rest
+
+  dummy_rest_nginx:
+    depends_on:
+      - dummy_rest_php
+    image: nginx:latest
+    working_dir: /www
+    ports:
+      - 8045:80
+    volumes:
+      - .:/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - dummy_rest
+
+networks:
+  dummy_rest:

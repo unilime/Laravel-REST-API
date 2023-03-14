@@ -1,0 +1,10 @@
+.DS_Store
+.idea
+.git
+!.env.example
+vendor
+node_modules
+docker
+docker-compose.yml
+k8s
+public/storage
