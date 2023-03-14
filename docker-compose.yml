@@ -4,7 +4,7 @@ services:
   dummy_rest_db:
     image: 'mysql:8.0'
     ports:
-      - 33062:3306
+      - 33061:3306
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: '${DB_DATABASE}'
